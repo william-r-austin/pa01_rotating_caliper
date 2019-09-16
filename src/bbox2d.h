@@ -29,7 +29,7 @@ namespace polygon {
       obb m_solution;
   };
 
-  //You main task is to implement this problem.
+  //You main task is to implement this class.
   class bbox2d
   {
   public:
