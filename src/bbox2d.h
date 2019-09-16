@@ -50,10 +50,6 @@ namespace polygon {
       obb createOBB(int e[4],const mathtool::Vector2d& v, const mathtool::Vector2d& n);
 
       //data
-#if DEBUG
-      c_ply m_chull_ply;
-      c_polygon m_ply;
-#endif
       vector<mathtool::Point2d> m_chull; //convex hull of the input poly
   };
 
