@@ -1,5 +1,7 @@
 #  GMU CS633 Programming Assignment 01: Rotating Caliper for Computing the Bounding Boxes
 
+### Due: Sept 30th.
+
 ### Goals: 
 1. Implement convex hull algorithm, "On-line construction of the convex hull of a simple polygon", by A. Melkman.
    - You can find a short introduction of the paper and code here: http://geomalgorithms.com/a12-_hull-3.html
