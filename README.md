@@ -3,7 +3,7 @@
 ### Goals: 
 1. Implement convex hull algorithm, "On-line construction of the convex hull of a simple polygon", by A. Melkman.
    - You can find a short introduction of the paper and code here: http://geomalgorithms.com/a12-_hull-3.html
-   - Understand the paepr and code, and re-implement it using the provided frameowrk
+   - Understand the paper and the code, and re-implement it using the provided frameowrk
   
 2. Implement the rotating calipers algorithm to compute the smallest bounding boxes of a polygon
    - Use the convex hull build from Step#1, compute the smallest bounding boxes
