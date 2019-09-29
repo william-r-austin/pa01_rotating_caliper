@@ -8,6 +8,7 @@
 
 #include "bbox2d.h"
 #include "polygon.h"
+#include "chull.h"
 #include <fstream>
 using namespace std;
 
@@ -25,6 +26,29 @@ int main(int argc, char ** argv)
   masc::polygon::c_polygon poly;
   createPoly(argv[1],poly);
 
+  // Changing stuff here! -WA
+  //ply_vertex* head =  poly.getHead();
+  
+  //masc::polygon::ply_vertex* head = nullptr;
+  
+  int polySize = poly.getSize();
+  
+  for(int i = 0; i < polySize; i++) {
+    masc::polygon::ply_vertex* current = poly[i];
+    cout << "Current vertext = " << current->getPos() << ", VID = " << current->getVID() << endl;
+    //ply_vertex* s = poly.front();
+  }
+  
+  list<masc::polygon::ply_vertex*> hull;
+  masc::polygon::ply_vertex* start = poly[0];
+  hull2d(start, start->getPre(), hull);
+  
+  cout << "Calculated convex hull. Size is: " << hull.size() << endl;
+  
+  
+  //masc::polygon::hull2d(poly.g
+  
+  
   //create bbox of the polygon
   masc::polygon::bbox2d bbox(poly);
 
