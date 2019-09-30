@@ -93,6 +93,7 @@ namespace polygon {
 
   //save to svg file
   void saveSVG(string svg_filename, c_ply& ply, const obb& box);
+  void saveSVG(string svg_filename, c_ply& ply);
 
 }//end namespace polygon
 }//end namespace masc

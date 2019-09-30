@@ -1,6 +1,7 @@
 #include "bbox2d.h"
 #include "chull.h"
 #include "simple_svg_1.0.0.hpp"
+#include "Matrix.h"
 
 namespace masc {
 namespace polygon {
@@ -25,12 +26,100 @@ obb bbox2d::build(bbox2d_problem & problem)
   mathtool::Vector2d v,n; //the calipers, v & n are perpendicular
   int e[4]; //vertex indices of extreme points
   float a[4]; //angles between the calipers and the polygon edges
+  
+  double caliperValues[4];
+  //double bCaliperMinMax[2];
 
-  //1. initialize v so it is parallel to an edge and then determine n
+  // 1. initialize v so it is parallel to an edge and then determine n
+  int convexHullSize = m_chull.size();
+  Point2d vAsPoint2d = m_chull[0] - m_chull[convexHullSize - 1];
+  v.set(vAsPoint2d[0], vAsPoint2d[1]);
+  v.normalize();
+  n.set(-1 * vAsPoint2d[1], vAsPoint2d[0]); // N points to the interior of the polygon.
+  n.normalize(); 
 
-  //2. init extreme points e[4] using v & n, compute angles a[4]
+  // 2. init extreme points e[4] using v & n, compute angles a[4]
+  Matrix2x2 A(v[0], n[0], v[1], n[1]);
+  Matrix2x2 B(n[0], -1 * v[0], n[1], -1 * v[1]);
+  Matrix2x2 AInverse = A.inv();
+  Matrix2x2 BInverse = B.inv();
+  
+  bool firstPoint = true;
+  
+  for(int i = 0; i < convexHullSize; i++) {
+      Point2d iPoint = m_chull[i];
+      Vector2d iVector = Vector2d(iPoint[0], iPoint[1]);
+      
+      Vector2d vVector = AInverse * iVector;
+      double distanceFromV = vVector[1];
+      
+      Vector2d nVector = BInverse * iVector;
+      double distanceFromN = nVector[1];
+      
+      if(firstPoint) {
+          for(int k = 0; k < 3; k++) {
+              e[k] = i;
+              if(k % 2 == 0) {
+                  caliperValues[k] = distanceFromV;
+              }
+              else {
+                  caliperValues[k] = distanceFromN;
+              }
+          }
+          
+          firstPoint = false;
+      }
+      else {
+          if(distanceFromV < caliperValues[0]) {
+              e[0] = i;
+              caliperValues[0] = distanceFromV;
+          }
+          
+          if(distanceFromN < caliperValues[1]) {
+              e[1] = i;
+              caliperValues[1] = distanceFromN;
+          }
+          
+          if(distanceFromV > caliperValues[2]) {
+              e[2] = i;
+              caliperValues[2] = distanceFromV;
+          }
+          
+          if(distanceFromN > caliperValues[3]) {
+              e[3] = i;
+              caliperValues[3] = distanceFromN;
+          }
+      }
+  }
+  
+  for(int k = 0; k < 4; k++) {
+      Vector2d boxLine;
+      if(k == 0) {
+          boxLine.set(v);
+      }
+      else if(k == 1) {
+          boxLine.set(n);
+      }
+      else if(k == 2) {
+          boxLine.set(v * -1);
+      }
+      else if(k == 3) {
+          boxLine.set(n * -1);
+      }
+      
+      Vector2d polyLine;
+      int extremeIndex = e[k];
+      Point2d& extremeStartPoint = m_chull[extremeIndex];
+      Point2d& extremeEndPoint = m_chull[(extremeIndex + 1) % convexHullSize];
+      Point2d polyLineAsPoint = extremeEndPoint - extremeStartPoint;
+      polyLine.set(polyLineAsPoint[0], polyLineAsPoint[1]);
+      
+      double dotProduct = polyLine * boxLine;
+      double magnitudeProduct = polyLine.norm() * boxLine.norm();
+      a[k] = (float) (dotProduct / magnitudeProduct);
+  }
 
-  //3. iteratively update extreme points
+  // 3. iteratively update extreme points
   for(int i=0;i<m_chull.size();i++)
   {
     //3.1 create a box from v,n,e[4]
@@ -155,6 +244,27 @@ void saveSVG(string svg_filename, masc::polygon::c_ply& ply, const masc::polygon
     svg::Polygon box_bd(svg::Fill(svg::Color::Yellow), svg::Stroke(0.5, svg::Color::Black));
     box2ply(box, box_bd);
     doc << box_bd;
+    svg::Polygon poly_bd(svg::Fill(svg::Color::Silver), svg::Stroke(0.5, svg::Color::Black));
+    ply2ply(ply, poly_bd);
+    doc << poly_bd;
+
+    doc.save();
+    cout << "- Saved " << svg_filename << endl;
+}
+
+
+void saveSVG(string svg_filename, masc::polygon::c_ply& ply)
+{
+    double scale = 2.5;
+    double halfScale = scale / 2;
+    auto R=ply.getRadius();
+    auto center=ply.getCenter();
+
+    svg::Dimensions dimensions(R*scale, R*scale);
+    svg::Document doc(svg_filename, svg::Layout(dimensions, svg::Layout::BottomLeft, 1, svg::Point(-center[0]+R*halfScale, -center[1]+R*halfScale)));
+
+    //------------------------------------------------------------------
+    //draw the external boundary
     svg::Polygon poly_bd(svg::Fill(svg::Color::Silver), svg::Stroke(0.5, svg::Color::Black));
     ply2ply(ply, poly_bd);
     doc << poly_bd;

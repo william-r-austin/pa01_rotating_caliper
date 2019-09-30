@@ -31,6 +31,14 @@ int main(int argc, char ** argv)
   
   //masc::polygon::ply_vertex* head = nullptr;
   
+  const masc::polygon::c_ply& ply = poly.front();
+  
+  cout << "Printing polylist: " << poly << endl;
+  
+  //cout << ply << endl;
+  
+
+  
   int polySize = poly.getSize();
   
   for(int i = 0; i < polySize; i++) {
@@ -44,6 +52,24 @@ int main(int argc, char ** argv)
   hull2d(start, start->getPre(), hull);
   
   cout << "Calculated convex hull. Size is: " << hull.size() << endl;
+  
+  
+  // Generate a c_ply to output an SVG
+    masc::polygon::c_ply convexHullPly(masc::polygon::c_ply::POUT);
+  
+  convexHullPly.beginPoly();
+  for(auto convexHullVertex : hull) {
+      
+      const Point2d& vertexPoint = convexHullVertex->getPos();
+      convexHullPly.addVertex(vertexPoint[0], vertexPoint[1], true);
+  }
+  
+  convexHullPly.endPoly();
+  
+  convexHullPly.doInit();
+  
+  saveSVG("convex_hull.svg", convexHullPly);
+
   
   
   //masc::polygon::hull2d(poly.g
