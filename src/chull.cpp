@@ -158,7 +158,11 @@ void hull2d(ply_vertex * startVertex, ply_vertex * endVertex, list<ply_vertex*>&
   }
   
   hull.clear();
-  copy(convexHullDeque.begin(), convexHullDeque.end(), back_inserter(hull));
+  for(int j = 0; j < convexHullDeque.size() - 1; j++) {
+      ply_vertex* jVertex = convexHullDeque.at(j);
+      hull.push_back(jVertex);
+  }
+  //copy(convexHullDeque.begin(), convexHullDeque.end(), back_inserter(hull));
 }
 
 }//end namespace polygon

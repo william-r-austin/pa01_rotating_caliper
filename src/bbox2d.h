@@ -2,6 +2,7 @@
 
 #include "Point.h"
 #include "polygon.h"
+#include "Matrix.h"
 #include <ostream>
 
 #define DEBUG 0 //to enable debugging output, change to 1
@@ -43,6 +44,20 @@ namespace polygon {
 
   private:
 
+      // Calculate the parallel and normal vectors at the vertex of a polygon
+      void calculateVectorsForVertex(const int startVertexIndex, mathtool::Vector2d& v, mathtool::Vector2d& n);
+      
+      // Calculate the inverse matrix that will allow us to compute extreme points
+      mathtool::Matrix2x2 calculateInverseMatrix(const mathtool::Vector2d& v, const mathtool::Vector2d& n);
+      
+      // Calculate the extreme points given a point and the inverse of the orthonormal (v n) matrix.
+      void calculateExtremePoints(const mathtool::Matrix2x2 inverseMatrix, const mathtool::Point2d& startPoint, int (&extremePointVertexIndices)[4]);
+      
+      // Calculate the intersection point of 2 point/direction pairs.
+      mathtool::Point2d calculateIntersection(const mathtool::Point2d point0, const mathtool::Vector2d dir0, 
+                                                const mathtool::Point2d point1, const mathtool::Vector2d dir1,
+                                                double (&scaleParameters)[2]);
+      
       //return the index of the smallest angle
       int findAngles(int e[4], float a[4], const mathtool::Vector2d& v, const mathtool::Vector2d& n);
 
