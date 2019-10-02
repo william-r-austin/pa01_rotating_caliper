@@ -36,29 +36,15 @@ int isLeft(const Point2d& point0, const Point2d& point1, const Point2d& point2) 
     toArray(point1, y);
     toArray(point2, z);
     
-    int area2 = masc::polygon::Area(x, y, z);
+    //int area2 = masc::polygon::Area(x, y, z);
     int areaSign = masc::polygon::AreaSign(x, y, z);
    
     //cout << "Area = " << area2 << ", AreaSign = " << areaSign << endl;
     return areaSign;
-    /*
-  double a = point1[0] - point0[0];
-  double b = point2[1] - point0[1];
-  double c = point2[0] - point0[0];
-  double d = point1[1] - point0[1];
-
-  double area = (a * b) - (c * d);
-  bool result = area > 0;
-  
-  cout << "isLeft calculation for: " << point0 << " ==> " << point1 << " ==> " << point2 
-    << " is: " << result << " (" << area << ")" << endl;
-  
-  return result;*/
 }
 
 int isLeft(ply_vertex* p0, ply_vertex* p1, ply_vertex* p2) {
   return isLeft(p0->getPos(), p1->getPos(), p2->getPos());
-  
 }
 
 //
@@ -76,20 +62,12 @@ void hull2d(ply_vertex * startVertex, ply_vertex * endVertex, list<ply_vertex*>&
   ply_vertex* p0 = startVertex;
   ply_vertex* p1 = p0->getNext();
   ply_vertex* p2 = p1->getNext();
-  
-  cout << "p0 = " << p0->getPos() << endl;
-  cout << "p1 = " << p1->getPos() << endl;
-  cout << "p2 = " << p2->getPos() << endl;
-  
+ 
   bool vertex2OnLeft = isLeft(p0, p1, p2) > 0;
   
-  cout << "vertex2OnLeft = " << vertex2OnLeft << endl;
   vector<ply_vertex*> convexHullDeque;
   convexHullDeque.push_back(p2);
-  
-  
-  cout << "Got here." << endl;
-  
+    
   if(vertex2OnLeft) {
     convexHullDeque.push_back(p0);
     convexHullDeque.push_back(p1);
@@ -101,18 +79,17 @@ void hull2d(ply_vertex * startVertex, ply_vertex * endVertex, list<ply_vertex*>&
   
   convexHullDeque.push_back(p2);
   
-  printConvexHull(convexHullDeque);
+  //printConvexHull(convexHullDeque);
   
   ply_vertex* current = p2;
   bool finished = (current == endVertex);
   
   while(!finished) {
     current = current->getNext();
+    
     // Part 1.
     ply_vertex* bottom = convexHullDeque.at(0);
     ply_vertex* bottomNext = convexHullDeque.at(1);
-    
-    cout << "Got here?? Maybe not ... :/" << endl;
     
     int convexHullSize = convexHullDeque.size();
     ply_vertex* top = convexHullDeque.at(convexHullSize - 1);
@@ -152,17 +129,17 @@ void hull2d(ply_vertex * startVertex, ply_vertex * endVertex, list<ply_vertex*>&
       convexHullDeque.push_back(current);
     }
 
-    printConvexHull(convexHullDeque);
-    //current = current->getNext();
+    //printConvexHull(convexHullDeque);
     finished = (current == endVertex);
   }
   
   hull.clear();
+  
+  // Copy all of the points except the last one
   for(int j = 0; j < convexHullDeque.size() - 1; j++) {
       ply_vertex* jVertex = convexHullDeque.at(j);
       hull.push_back(jVertex);
   }
-  //copy(convexHullDeque.begin(), convexHullDeque.end(), back_inserter(hull));
 }
 
 }//end namespace polygon

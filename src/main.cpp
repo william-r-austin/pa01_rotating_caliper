@@ -27,54 +27,24 @@ int main(int argc, char ** argv)
   createPoly(argv[1],poly);
 
   // Changing stuff here! -WA
-  //ply_vertex* head =  poly.getHead();
-  
-  //masc::polygon::ply_vertex* head = nullptr;
-  
-  const masc::polygon::c_ply& ply = poly.front();
-  
-  cout << "Printing polylist: " << poly << endl;
-  
-  //cout << ply << endl;
-  
-
-  
-  int polySize = poly.getSize();
-  
-  for(int i = 0; i < polySize; i++) {
-    masc::polygon::ply_vertex* current = poly[i];
-    cout << "Current vertext = " << current->getPos() << ", VID = " << current->getVID() << endl;
-    //ply_vertex* s = poly.front();
-  }
-  
   list<masc::polygon::ply_vertex*> hull;
   masc::polygon::ply_vertex* start = poly[0];
   hull2d(start, start->getPre(), hull);
-  
-  cout << "Calculated convex hull. Size is: " << hull.size() << endl;
-  
+  //cout << "Calculated convex hull. Size is: " << hull.size() << endl;
   
   // Generate a c_ply to output an SVG
-    masc::polygon::c_ply convexHullPly(masc::polygon::c_ply::POUT);
+  masc::polygon::c_ply convexHullPly(masc::polygon::c_ply::POUT);
   
   convexHullPly.beginPoly();
   for(auto convexHullVertex : hull) {
-      
       const Point2d& vertexPoint = convexHullVertex->getPos();
       convexHullPly.addVertex(vertexPoint[0], vertexPoint[1], true);
   }
   
   convexHullPly.endPoly();
-  
   convexHullPly.doInit();
-  
   saveSVG("convex_hull.svg", convexHullPly);
 
-  
-  
-  //masc::polygon::hull2d(poly.g
-  
-  
   //create bbox of the polygon
   masc::polygon::bbox2d bbox(poly);
 
